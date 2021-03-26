@@ -1,0 +1,89 @@
+$base-color: #ffffff;
+$red: #ff0000;
+$green: #00ff00;
+$blue: #0000ff;
+
+$min-height-screen: 100vh;
+$header-min-height: 5vh;
+$carousel-min-height: 25vh;
+$main-min-height: 70vh;
+
+// * { border: black 1px dotted}
+
+.App {
+  min-height: $main-min-height;
+}
+
+.App-header {
+  min-height: $header-min-height;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  // font-size: calc(10px + 2vmin);
+  // color: white;
+}
+
+@mixin reset-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.header-left {
+  @include reset-list;
+  display: flex;
+  flex: 25%;
+  flex-flow: row nowrap;
+  li {
+    padding: 0 5px 0 5px
+  }
+}
+
+.header-right {
+  @include reset-list;
+  display: flex;
+  flex: 25%;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
+}
+
+.App-carousel {
+  min-height: $carousel-min-height;
+}
+
+.App-main {
+  display: flex;
+  min-height: $main-min-height;
+  // padding: 3px;
+}
+
+.sidebar {
+  flex: 1;
+}
+
+// --- Main Book View ----
+
+.book-container {
+  flex: 4;
+}
+
+.genre-toolbar {
+  display: flex;
+  border-bottom: lightslategray 1px solid;
+}
+
+.genre-header {
+  flex-basis: 20%;
+}
+
+.genre-list {
+  @include reset-list;
+  display: flex;
+  flex: 1;
+  justify-content: flex-end;
+  flex-flow: row nowrap;
+  li {
+    padding: 0 10px 0 10px;
+  }
+}
