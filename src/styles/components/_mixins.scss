@@ -9,16 +9,17 @@
 
 // allows us to position an image as any other flex child
 // by utilizing a div as a wrapper element
-@mixin img-flex-child($width, $height, $radius: 0, $box-shadow: 0px 1px 2px rgb(200, 200, 200)) {
-  div {
+@mixin img-flex-child($width, $height, $radius: 0, $box-shadow: 0px 0px 10px rgba(128, 128, 128, 0.3)) {
+  .image-flex-wrapper {
     width: $width;
     height: $height;
     img {
       @if $radius != 0 {
         border-radius: $radius;
       }
-      width: $width;
-      height: $height;
+      max-width: 100%;
+      height: auto;
+      object-fit: scale-down;
       box-shadow: $box-shadow;
     }
   }
