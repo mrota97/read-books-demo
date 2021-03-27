@@ -1,15 +1,26 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import './styles/App.scss';
 import React from 'react';
 
 // icons and placeholders
 import { run as runHolder } from 'holderjs/holder'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faSearch, faBars, faAngleDown, faStar } from "@fortawesome/free-solid-svg-icons"
+import { faSearch, faBars, faAngleDown, faStar, faEllipsisV } from "@fortawesome/free-solid-svg-icons"
+
+// get a random number from 1 to rangeEnd (default 10)
+function getRandomNumber(rangeEnd = 10) {
+  return Math.floor((Math.random() * rangeEnd) + 1)
+}
 
 // 500 x 700
 function getRandomBookCover() {
-  return `https://readbooksdemo.s3.amazonaws.com/read-books-demo/book_cover_${Math.floor((Math.random() * 10) + 1)}.png`
+  return `https://readbooksdemo.s3.amazonaws.com/read-books-demo/book_cover_${getRandomNumber(10)}.png`
 }
+
+function getRandomProfilePicture() {
+  return `https://readbooksdemo.s3.amazonaws.com/read-books-demo/profile_picture_${getRandomNumber(5)}.png`
+}
+
 
 function BookCarouselItem() {
   return (
@@ -46,7 +57,7 @@ function AuthorListEntry({ name }) {
     <div className="author">
       <div className="author-pfp">
         <div className="image-flex-wrapper">
-          <img src="holder.js/30x30" alt="author profile icon" />
+          <img src={getRandomProfilePicture()} alt="author profile icon" />
         </div>
       </div>
       <h4>{name}</h4>
@@ -70,13 +81,53 @@ function BookListEntry({ name, author }) {
   )
 }
 
-function BookGridEntry({ name, author }) {
-  // const dummyLikeCounter = Array(Math.floor((Math.random() * 3) + 1)).fill(null).map(v => )
+function BookGridEntry({ name, author, likedBy }) {
+  
+  function constructLikedCounter() {
+    let likedText;
+    switch (likedBy.length) {
+      case 1:
+        likedText = <p><span style={{ fontWeight: "bold" }}>{likedBy[0]}</span> liked this</p>
+        break
+      case 2:
+        likedText = (
+          <p>
+            <span style={{ fontWeight: "bold" }}>{likedBy[0]}</span> and&nbsp;
+            <span style={{ fontWeight: "bold" }}>{likedBy[1]}</span> liked this
+          </p>
+        )
+        break;
+      case 3:
+        likedText = (
+          <p>
+            <span style={{ fontWeight: "bold" }}>{likedBy[0]}</span> and&nbsp;
+            <span style={{ fontWeight: "bold" }}>2 other friends</span> liked this
+          </p>
+        )
+        break;
+      default:
+        likedText = <p>No likes</p>
+    }
+    return (
+      <div className="book-entry-footer">
+        <div className="image-group">
+          {likedBy.map(v => (
+            <div className="image-flex-wrapper">
+              <img src={getRandomProfilePicture()} alt="author profile icon" />
+            </div>
+          ))}
+        </div>
+        {likedText}
+      </div>
+    )
+  }
+
   return (
     <div className="book-entry-container">
       <div className="book-entry-box">
         {/* main */}
         
+        <FontAwesomeIcon icon={faEllipsisV} className="menu-button" color="blue" />
         <div className="book-entry-main">
           <div className="book-cover-container">
             <div className="image-flex-wrapper">
@@ -87,7 +138,7 @@ function BookGridEntry({ name, author }) {
             <h2>{name}</h2>
             <h3>by {author}</h3>
             <div className="rating">
-              <div>
+              <div className="star-row">
                 <FontAwesomeIcon icon={faStar} color="yellow" />
                 <FontAwesomeIcon icon={faStar} color="yellow" />
                 <FontAwesomeIcon icon={faStar} color="yellow" />
@@ -96,20 +147,12 @@ function BookGridEntry({ name, author }) {
               </div>
               <p>2,000,000 votes</p>
             </div>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ultricies nisl at urna fringilla aliquet. Donec dictum. </p>
+            <p className="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ultricies nisl at urna fringilla aliquet. Donec dictum. </p>
           </div>
         </div>
 
         {/* footer */}
-        <div className="book-entry-footer">
-          <div className="image-flex-wrapper">
-            <img src="holder.js/25x25" alt="author profile icon" />
-          </div>
-          <div className="image-flex-wrapper">
-            <img src="holder.js/25x25" alt="author profile icon" />
-          </div>
-          <p>John Doe and 2 other friends liked this</p>
-        </div>
+        {constructLikedCounter()}
       </div>
     </div>
   )
@@ -117,6 +160,8 @@ function BookGridEntry({ name, author }) {
 
 function BookContainer() {
   const [activeGenre, setActiveGenre] = React.useState(1)
+  
+  // generate sample data
   const sampleGenreList = [
     { name: "All Genres", value: 1 },
     { name: "Business", value: 2 },
@@ -126,7 +171,22 @@ function BookContainer() {
     { name: "Biography", value: 6 }
   ]
 
-  const sampleBookList = Array(10).fill(0)
+  const sampleAuthorNames = ['Sebastian Jeremy', 'Angeline Summer', 'Ian Cassandra']
+  const sammpleFriendNames = ['Noah Jones', 'Tommy Adam', 'Jonathan Doe']
+
+  // each book will get placed in a random genre
+  const booksByGenre = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] }
+
+  for (let i = 0; i < 10; i++) {
+    const dummyBookEntry = {
+      name: "Placeholder Book Covers",
+      author: sampleAuthorNames[getRandomNumber(3) - 1],
+      likedBy: sammpleFriendNames.slice(0, getRandomNumber(3))
+    }
+    const dummyBookGenre = sampleGenreList[getRandomNumber(5)]
+    booksByGenre[1].push(dummyBookEntry)
+    booksByGenre[dummyBookGenre.value].push(dummyBookEntry)
+  }
 
   return (
     <div className="book-container">
@@ -143,6 +203,7 @@ function BookContainer() {
               >
                 {name}
               </a>
+              {activeGenre === value && <div className="active-underline" />}
             </li>
           ))}
         </ul>
@@ -150,7 +211,7 @@ function BookContainer() {
 
       {/* book list grid */}
       <div className="book-grid">
-        {sampleBookList.map(v => <BookGridEntry name={"Placeholder Book Covers"} author={"John Doe"} />)}
+        {booksByGenre[activeGenre].map(v => <BookGridEntry name={v.name} author={v.author} likedBy={v.likedBy} />)}
       </div>
     </div>
   )
@@ -164,13 +225,13 @@ function App() {
       <header className="App-header">
         <div className="header-left">
           <div>
-            <h3>Browse Catagory</h3>
+            <h3 className="icon-left">Browse Catagory</h3>
             <FontAwesomeIcon icon={faAngleDown} />
           </div>
-          <div>|</div>
+          <div className="separator">|</div>
           <div>
             <FontAwesomeIcon icon={faSearch} />
-            <h3><span style={{ color: "lightgray" }}>Search Book</span></h3>
+            <h3 className="icon-right"><span style={{ color: "lightgray" }}>Search Book</span></h3>
           </div>
         </div>
 
@@ -182,13 +243,13 @@ function App() {
         <div className="header-right">
           <div>
             <div className="image-flex-wrapper">
-              <img src="holder.js/30x30" alt="user profile" />
+              <img src={getRandomProfilePicture()} alt="user profile" />
             </div>
           </div>
-          <div>|</div>
+          <div className="separator">|</div>
           <div>
             <FontAwesomeIcon icon={faBars} />
-            <h3>Menu</h3>
+            <h3 className="icon-right">Menu</h3>
           </div>
         </div>
     </header>
@@ -209,7 +270,7 @@ function App() {
         <div className="sidebar">
           {/* author list */}
           <section className="best-authors">
-            <h2>Author of the Week</h2>
+            <h2 className="sidebar-heading">Author of the Week</h2>
             <ul>
               <li><AuthorListEntry name={"Sebastian Jeremy"} /></li>
               <li><AuthorListEntry name={"Jonathan Doe"} /></li>
@@ -222,7 +283,7 @@ function App() {
 
           {/* book list */}
           <section className="best-books">
-            <h2>Books of the Year</h2>
+            <h2 className="sidebar-heading">Books of the Year</h2>
             <ul>
               <li><BookListEntry name={"Placeholder Book Covers"} author={"John Doe"} /></li>
               <li><BookListEntry name={"Placeholder Book Covers"} author={"John Doe"} /></li>
